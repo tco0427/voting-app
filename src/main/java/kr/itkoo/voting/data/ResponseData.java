@@ -1,11 +1,13 @@
 package kr.itkoo.voting.data;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
 @ToString
 @Getter
+@AllArgsConstructor
 public class ResponseData<T> {
     @ApiModelProperty(value = "상태코드")
     private int status;
@@ -20,12 +22,6 @@ public class ResponseData<T> {
         this.status = StatusCode.OK;
         this.message = ResponseMessage.SUCCESS;
         this.data = null;
-    }
-
-    public ResponseData(int status, String message, T data) {
-        this.status = status;
-        this.message = message;
-        this.data = data;
     }
 
     public ResponseData(T data) {

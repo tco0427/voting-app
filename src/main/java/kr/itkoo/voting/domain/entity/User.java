@@ -1,17 +1,18 @@
 package kr.itkoo.voting.domain.entity;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+
+import static javax.persistence.GenerationType.*;
 
 @Getter
 @Entity
 @ToString
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     private String platformCode;
