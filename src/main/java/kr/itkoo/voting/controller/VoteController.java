@@ -8,6 +8,8 @@ import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
 import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.domain.entity.Vote;
+import kr.itkoo.voting.domain.repository.UserRepository;
+import kr.itkoo.voting.service.UserService;
 import kr.itkoo.voting.service.VoteService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +26,7 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class VoteController {
 
+    private final UserService userService;
     private final VoteService voteService;
 
     @ApiOperation(value ="", notes ="id값으로 vote 정보 조회")
@@ -39,7 +42,7 @@ public class VoteController {
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteDto);
             log.info(responseData.toString());
         }catch(NoSuchElementException e){
-            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER, voteDto);
+            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE, voteDto);
             log.error("Optional Error" + e.getMessage());
         }catch(Exception e){
             log.error(e.getMessage());
@@ -50,17 +53,30 @@ public class VoteController {
 
     @ApiOperation(value = "", notes = "새로운 vote 생성")
     @PostMapping("/new")
-    public CreateVoteResponse saveVote(@RequestBody @Valid CreateVoteRequest request){
+    public ResponseData<CreateVoteResponse> saveVote(@RequestBody @Valid CreateVoteRequest request){
 
-        Vote vote = new Vote();
+        ResponseData<CreateVoteResponse> responseData =null;
+        CreateVoteResponse createVoteResponse = null;
+        try{
+            Vote vote = new Vote();
+            User user = userService.findById(request.getUserId()).get();
+            vote.setUser(user);
+            vote.setTitle(request.getTitle());
+            vote.setCreatedAt(request.getCreatedAt());
 
-        vote.setUser(request.getUser());
-        vote.setTitle(request.getTitle());
-        vote.setCreatedAt(request.getCreatedAt());
+            Long id = voteService.join(vote);
 
-        Long id = voteService.join(vote);
+            createVoteResponse = new CreateVoteResponse(id);
+            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, createVoteResponse);
+            log.info(responseData.toString());
+        }catch(NoSuchElementException e){
+            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,createVoteResponse);
+            log.error("Optional Error" + e.getMessage());
+        }catch(Exception e){
+            log.error(e.getMessage());
+        }
 
-        return new CreateVoteResponse(id);
+        return responseData;
     }
 
     @Data
@@ -71,9 +87,9 @@ public class VoteController {
 
     @Data
     static class CreateVoteRequest{
-        private User user;
+        private Long userId;
         private String title;
-        private int createdAt;
+        private Integer createdAt;
     }
 
     @Data

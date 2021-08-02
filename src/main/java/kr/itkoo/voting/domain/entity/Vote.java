@@ -7,11 +7,12 @@ import lombok.ToString;
 import javax.persistence.*;
 
 import static javax.persistence.FetchType.*;
+import static javax.persistence.GenerationType.*;
 
 @Entity
 @Getter @Setter @ToString
 public class Vote {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy= IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = LAZY)
