@@ -5,6 +5,9 @@ import lombok.ToString;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.GenerationType.*;
 
 @Getter
@@ -22,7 +25,10 @@ public class User {
     private String imageUrl;
 
     @Column(nullable = true)
-    private int updatedAt;
+    private Integer updatedAt;
 
-    private int createdAt;
+    private Integer createdAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<Vote> votes = new ArrayList<>();
 }
