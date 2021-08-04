@@ -34,4 +34,8 @@ public class VoteService {
         vote.setTitle(title);
         vote.setUpdatedAt(updatedAt);
     }
+
+    public void deleteById(Long id){
+        voteRepository.deleteById(id);
+    }
 }

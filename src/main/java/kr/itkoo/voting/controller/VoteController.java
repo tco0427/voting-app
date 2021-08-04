@@ -81,11 +81,44 @@ public class VoteController {
 
     @ApiOperation(value = "", notes = "vote 수정")
     @PutMapping("/{id}")
-    public UpdateVoteResponse updateVote(@PathVariable("id") Long id,
+    public ResponseData<UpdateVoteResponse> updateVote(@PathVariable("id") Long id,
                                          @RequestBody @Valid UpdateVoteRequest request){
-        voteService.update(id, request.getTitle(), (int) System.currentTimeMillis());
-        Vote vote = voteService.findById(id).get();
-        return new UpdateVoteResponse(vote.getId(),vote.getTitle(), vote.getUpdatedAt());
+        ResponseData<UpdateVoteResponse> responseData =null;
+        UpdateVoteResponse createVoteResponse = null;
+        try{
+            voteService.update(id, request.getTitle(), (int) System.currentTimeMillis());
+            Vote vote = voteService.findById(id).get();
+
+            createVoteResponse = new UpdateVoteResponse(vote.getId(),vote.getTitle(),vote.getUpdatedAt());
+            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, createVoteResponse);
+
+        }catch(NoSuchElementException e){
+            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,createVoteResponse);
+            log.error("Optional Error" + e.getMessage());
+        }catch(Exception e){
+            log.error(e.getMessage());
+        }
+        return responseData;
+    }
+
+    @ApiOperation(value = "", notes = "vote 삭제")
+    @DeleteMapping("/{id}")
+    public ResponseData<DeleteVoteDto> deleteVote(@PathVariable("id") Long id){
+        ResponseData<DeleteVoteDto> responseData = null;
+        try{
+            voteService.deleteById(id);
+            responseData = new ResponseData<>(StatusCode.OK,ResponseMessage.SUCCESS,new DeleteVoteDto(id));
+        }catch(Exception e){
+            responseData = new ResponseData<>(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_VOTE,new DeleteVoteDto(id));
+            log.error(e.getMessage());
+        }
+        return responseData;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class DeleteVoteDto{
+        private Long id;
     }
 
     @Data
