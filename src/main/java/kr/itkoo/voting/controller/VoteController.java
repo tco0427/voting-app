@@ -28,6 +28,9 @@ public class VoteController {
     private final UserService userService;
     private final VoteService voteService;
 
+    /**
+     * 투표 정보 조회
+     */
     @ApiOperation(value ="", notes ="id값으로 vote 정보 조회")
     @GetMapping("/{id}")
     public ResponseData<VoteDto> getVoteById(@ApiParam("투표 id") @PathVariable("id") Long id){
@@ -50,6 +53,15 @@ public class VoteController {
         return responseData;
     }
 
+    @Data
+    @AllArgsConstructor
+    static class VoteDto{
+        private String title;
+    }
+
+    /**
+     * 투표 생성
+     */
     @ApiOperation(value = "", notes = "새로운 vote 생성")
     @PostMapping("/new")
     public ResponseData<CreateVoteResponse> saveVote(@RequestBody @Valid CreateVoteRequest request){
@@ -79,21 +91,36 @@ public class VoteController {
         return responseData;
     }
 
+    @Data
+    static class CreateVoteRequest{
+        private Long userId;
+        private String title;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class CreateVoteResponse{
+        private Long id;
+    }
+
+    /**
+     * 투표 정보 수정
+     */
     @ApiOperation(value = "", notes = "vote 수정")
     @PutMapping("/{id}")
     public ResponseData<UpdateVoteResponse> updateVote(@PathVariable("id") Long id,
                                          @RequestBody @Valid UpdateVoteRequest request){
         ResponseData<UpdateVoteResponse> responseData =null;
-        UpdateVoteResponse createVoteResponse = null;
+        UpdateVoteResponse updateVoteResponse = null;
         try{
             voteService.update(id, request.getTitle(), (int) System.currentTimeMillis());
             Vote vote = voteService.findById(id).get();
 
-            createVoteResponse = new UpdateVoteResponse(vote.getId(),vote.getTitle(),vote.getUpdatedAt());
-            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, createVoteResponse);
+            updateVoteResponse = new UpdateVoteResponse(vote.getId(),vote.getTitle(),vote.getUpdatedAt());
+            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, updateVoteResponse);
 
         }catch(NoSuchElementException e){
-            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,createVoteResponse);
+            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE, updateVoteResponse);
             log.error("Optional Error" + e.getMessage());
         }catch(Exception e){
             log.error(e.getMessage());
@@ -101,6 +128,22 @@ public class VoteController {
         return responseData;
     }
 
+    @Data
+    static class UpdateVoteRequest{
+        private String title;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class UpdateVoteResponse{
+        private Long id;
+        private String title;
+        private Integer updatedAt;
+    }
+
+    /**
+     * 투표 삭제
+     */
     @ApiOperation(value = "", notes = "vote 삭제")
     @DeleteMapping("/{id}")
     public ResponseData<DeleteVoteDto> deleteVote(@PathVariable("id") Long id){
@@ -120,36 +163,4 @@ public class VoteController {
     static class DeleteVoteDto{
         private Long id;
     }
-
-    @Data
-    static class UpdateVoteRequest{
-        private String title;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class UpdateVoteResponse{
-        private Long id;
-        private String title;
-        private Integer updatedAt;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class VoteDto{
-        private String title;
-    }
-
-    @Data
-    static class CreateVoteRequest{
-        private Long userId;
-        private String title;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class CreateVoteResponse{
-        private Long id;
-    }
-
 }
