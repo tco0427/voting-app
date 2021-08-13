@@ -31,9 +31,9 @@ public class VoteController {
     /**
      * 투표 정보 조회
      */
-    @ApiOperation(value ="", notes ="id값으로 vote 정보 조회")
+    @ApiOperation(value ="투표 정보 조회", notes ="id값으로 vote 정보를 조회합니다.")
     @GetMapping("/{id}")
-    public ResponseData<VoteDto> getVoteById(@ApiParam("투표 id") @PathVariable("id") Long id){
+    public ResponseData<VoteDto> getVoteById(@ApiParam(name = "투표 id", required = true, example = "1") @PathVariable("id") Long id){
         log.info("getVoteById : " + id);
         ResponseData<VoteDto> responseData =null;
 
@@ -62,7 +62,7 @@ public class VoteController {
     /**
      * 투표 생성
      */
-    @ApiOperation(value = "", notes = "새로운 vote 생성")
+    @ApiOperation(value = "투표 생성", notes = "새로운 vote를 생성 합니다.")
     @PostMapping("/new")
     public ResponseData<CreateVoteResponse> saveVote(@RequestBody @Valid CreateVoteRequest request){
 
@@ -78,7 +78,7 @@ public class VoteController {
 
             Long id = voteService.join(vote);
 
-            createVoteResponse = new CreateVoteResponse(id);
+            createVoteResponse = new CreateVoteResponse(id,vote.getTitle());
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, createVoteResponse);
             log.info(responseData.toString());
         }catch(NoSuchElementException e){
@@ -101,12 +101,13 @@ public class VoteController {
     @AllArgsConstructor
     static class CreateVoteResponse{
         private Long id;
+        private String title;
     }
 
     /**
      * 투표 정보 수정
      */
-    @ApiOperation(value = "", notes = "vote 수정")
+    @ApiOperation(value = "투표 정보 수정", notes = "vote를 id로 조회 후 수정합니다.")
     @PutMapping("/{id}")
     public ResponseData<UpdateVoteResponse> updateVote(@PathVariable("id") Long id,
                                          @RequestBody @Valid UpdateVoteRequest request){
@@ -144,7 +145,7 @@ public class VoteController {
     /**
      * 투표 삭제
      */
-    @ApiOperation(value = "", notes = "vote 삭제")
+    @ApiOperation(value = "투표 삭제", notes = "vote를 id값을 통해 삭제합니다.")
     @DeleteMapping("/{id}")
     public ResponseData<DeleteVoteDto> deleteVote(@PathVariable("id") Long id){
         ResponseData<DeleteVoteDto> responseData = null;
