@@ -17,12 +17,31 @@ public class User {
 
     private String platformCode;
 
+    private int platformId;
+
     private String name;
 
     private String imageUrl;
 
     @Column(nullable = true)
-    private int updatedAt;
+    private long updatedAt;
 
-    private int createdAt;
+    private long createdAt;
+
+    public User(String platformCode, int platformId, String name, String imageUrl, long updatedAt, long createdAt) {
+        this.platformCode = platformCode;
+        this.platformId = platformId;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.updatedAt = updatedAt;
+        this.createdAt = createdAt;
+    }
+
+    public User(String platformCode, int platformId, String name, String imageUrl, long createdAt) {
+        this.platformCode = platformCode;
+        this.platformId = platformId;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.createdAt = createdAt;
+    }
 }
