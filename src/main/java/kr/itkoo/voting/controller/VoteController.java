@@ -185,7 +185,8 @@ public class VoteController {
 
         // 1-2. 없을경우 에러 처리
         if(userId == null){
-            // 에러 처리
+            responseData = new ResponseData<>(StatusCode.UNAUTHORIZED, ResponseMessage.NOT_FOUND_USER, null);
+            return responseData;
         }
 
         // 2. 투표 참여 정보 객체 저장
