@@ -26,5 +26,6 @@ public class VoteItem {
 
     private Long createdAt;
 
-    public VoteItem() {}
+    //JPA 프록시 객체 관련해서 명세상만 필요하므로 protected로 제한
+    protected VoteItem() {}
 }

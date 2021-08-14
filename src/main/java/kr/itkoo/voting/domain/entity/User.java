@@ -35,6 +35,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
 
+    protected User(){}
+
     public User(String platformCode, int platformId, String name, String imageUrl, long updatedAt, long createdAt) {
         this.platformCode = platformCode;
         this.platformId = platformId;
