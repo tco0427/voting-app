@@ -68,7 +68,7 @@ public class JwtUtil implements Serializable {
     }
 
     public Long getUserIdByToken(String token){
-        return 0L;
+        return 1L;
     }
 
     /**
