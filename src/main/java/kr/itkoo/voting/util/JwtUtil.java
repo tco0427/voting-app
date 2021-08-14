@@ -67,6 +67,10 @@ public class JwtUtil implements Serializable {
         return getClaimByToken(token, Claims::getExpiration);
     }
 
+    public Long getUserIdByToken(String token){
+        return 0L;
+    }
+
     /**
      * 토큰 만료여부 판별
      * @param token String

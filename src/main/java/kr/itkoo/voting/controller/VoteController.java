@@ -1,6 +1,7 @@
 package kr.itkoo.voting.controller;
 
 
+import io.jsonwebtoken.Claims;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kr.itkoo.voting.data.ResponseData;
@@ -8,15 +9,19 @@ import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
 import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.domain.entity.Vote;
+import kr.itkoo.voting.domain.entity.VoteParticipant;
 import kr.itkoo.voting.service.UserService;
 import kr.itkoo.voting.service.VoteService;
+import kr.itkoo.voting.util.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.http.HttpRequest;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -27,6 +32,7 @@ public class VoteController {
 
     private final UserService userService;
     private final VoteService voteService;
+    private final JwtUtil jwtUtil;
 
     /**
      * 투표 정보 조회
@@ -164,4 +170,34 @@ public class VoteController {
     static class DeleteVoteDto{
         private Long id;
     }
+
+    @PostMapping("/{voteId}/item/{voteItemId}")
+    public ResponseData<VoteParticipant> participateVote(@PathVariable("voteId") Long voteId, @PathVariable("voteItemId") Long voteItemId, HttpServletRequest request){
+        ResponseData<VoteParticipant> responseData = null;
+        Long userId = null;
+        String authenticationHeader = request.getHeader("Authorization");
+
+        // 1. 헤더에서 토큰값이 있는지 체크 & userId 가져오기
+        if(authenticationHeader.startsWith("Bearer")){
+            String token = authenticationHeader.replace("Bearer", "");
+            userId = jwtUtil.getUserIdByToken(token);
+        }
+
+        // 1-2. 없을경우 에러 처리
+        if(userId == null){
+            // 에러 처리
+        }
+
+        // 2. 투표 참여 정보 객체 저장
+        VoteParticipant voteParticipant = new VoteParticipant(userId, voteId, voteItemId);
+
+        // 3. 투표 참여 정보 테이블에 저장
+
+        // 3-2. DB 에러시 처리(try-catch 또는 exception 처리)
+
+        // 4. 응답 객체 생성 후 리턴
+        responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteParticipant);
+
+        return responseData;
+   }
 }
