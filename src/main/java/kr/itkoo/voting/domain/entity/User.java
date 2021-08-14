@@ -1,6 +1,7 @@
 package kr.itkoo.voting.domain.entity;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -20,15 +21,34 @@ public class User {
 
     private String platformCode;
 
+    private int platformId;
+
     private String name;
 
     private String imageUrl;
 
     @Column(nullable = true)
-    private Integer updatedAt;
+    private long updatedAt;
 
-    private Integer createdAt;
+    private long createdAt;
 
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
+
+    public User(String platformCode, int platformId, String name, String imageUrl, long updatedAt, long createdAt) {
+        this.platformCode = platformCode;
+        this.platformId = platformId;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.updatedAt = updatedAt;
+        this.createdAt = createdAt;
+    }
+
+    public User(String platformCode, int platformId, String name, String imageUrl, long createdAt) {
+        this.platformCode = platformCode;
+        this.platformId = platformId;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.createdAt = createdAt;
+    }
 }
