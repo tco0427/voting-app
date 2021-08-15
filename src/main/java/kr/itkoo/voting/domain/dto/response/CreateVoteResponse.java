@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class VoteParticipateResponse {
-    Long id;
+public class CreateVoteResponse {
+    private Long id;
+    private String title;
 }

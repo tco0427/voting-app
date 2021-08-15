@@ -9,7 +9,9 @@ import javax.validation.Valid;
 import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
-import kr.itkoo.voting.domain.dto.response.VoteParticipateResponse;
+import kr.itkoo.voting.domain.dto.request.CreateVoteRequest;
+import kr.itkoo.voting.domain.dto.request.UpdateVoteRequest;
+import kr.itkoo.voting.domain.dto.response.*;
 import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteParticipant;
@@ -46,33 +48,26 @@ public class VoteController {
 	 */
 	@ApiOperation(value = "투표 정보 조회", notes = "id값으로 vote 정보를 조회합니다.")
 	@GetMapping("/{id}")
-	public ResponseData<VoteDto> getVoteById(
+	public ResponseData<VoteResponse> getVoteById(
 		@ApiParam(name = "투표 id", required = true, example = "1") @PathVariable("id") Long id) {
 		log.info("getVoteById : " + id);
-		ResponseData<VoteDto> responseData = null;
+		ResponseData<VoteResponse> responseData = null;
 
-		VoteDto voteDto = null;
+		VoteResponse voteResponse = null;
 		try {
 			Vote vote = voteService.findById(id).get();
-			voteDto = new VoteDto(vote.getTitle());
-			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteDto);
+			voteResponse = new VoteResponse(vote.getTitle());
+			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteResponse);
 			log.info(responseData.toString());
 		} catch (NoSuchElementException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,
-				voteDto);
+				voteResponse);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
 
 		return responseData;
-	}
-
-	@Data
-	@AllArgsConstructor
-	static class VoteDto {
-
-		private String title;
 	}
 
 	/**
@@ -110,28 +105,13 @@ public class VoteController {
 		return responseData;
 	}
 
-	@Data
-	static class CreateVoteRequest {
-
-		private Long userId;
-		private String title;
-	}
-
-	@Data
-	@AllArgsConstructor
-	static class CreateVoteResponse {
-
-		private Long id;
-		private String title;
-	}
-
 	/**
 	 * 투표 정보 수정
 	 */
 	@ApiOperation(value = "투표 정보 수정", notes = "vote를 id로 조회 후 수정합니다.")
 	@PutMapping("/{id}")
 	public ResponseData<UpdateVoteResponse> updateVote(@PathVariable("id") Long id,
-		@RequestBody @Valid UpdateVoteRequest request) {
+													   @RequestBody @Valid UpdateVoteRequest request) {
 		ResponseData<UpdateVoteResponse> responseData = null;
 		UpdateVoteResponse updateVoteResponse = null;
 		try {
@@ -153,45 +133,23 @@ public class VoteController {
 		return responseData;
 	}
 
-	@Data
-	static class UpdateVoteRequest {
-
-		private String title;
-	}
-
-	@Data
-	@AllArgsConstructor
-	static class UpdateVoteResponse {
-
-		private Long id;
-		private String title;
-		private Integer updatedAt;
-	}
-
 	/**
 	 * 투표 삭제
 	 */
 	@ApiOperation(value = "투표 삭제", notes = "vote를 id값을 통해 삭제합니다.")
 	@DeleteMapping("/{id}")
-	public ResponseData<DeleteVoteDto> deleteVote(@PathVariable("id") Long id) {
-		ResponseData<DeleteVoteDto> responseData = null;
+	public ResponseData<DeleteVoteResponse> deleteVote(@PathVariable("id") Long id) {
+		ResponseData<DeleteVoteResponse> responseData = null;
 		try {
 			voteService.deleteById(id);
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
-				new DeleteVoteDto(id));
+				new DeleteVoteResponse(id));
 		} catch (Exception e) {
 			responseData = new ResponseData<>(StatusCode.BAD_REQUEST,
-				ResponseMessage.NOT_FOUND_VOTE, new DeleteVoteDto(id));
+				ResponseMessage.NOT_FOUND_VOTE, new DeleteVoteResponse(id));
 			log.error(e.getMessage());
 		}
 		return responseData;
-	}
-
-	@Data
-	@AllArgsConstructor
-	static class DeleteVoteDto {
-
-		private Long id;
 	}
 
 	@PostMapping("/{voteId}/item/{voteItemId}")

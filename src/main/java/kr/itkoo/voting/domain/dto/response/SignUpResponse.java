@@ -1,10 +1,8 @@
 package kr.itkoo.voting.domain.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class SignUpResponse {
     private Long userId;
     private String token;

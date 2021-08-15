@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class VoteParticipateResponse {
-    Long id;
+public class DeleteVoteResponse {
+    private Long id;
 }
