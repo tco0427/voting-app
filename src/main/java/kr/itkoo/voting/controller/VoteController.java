@@ -19,8 +19,6 @@ import kr.itkoo.voting.service.UserService;
 import kr.itkoo.voting.service.VoteParticipantService;
 import kr.itkoo.voting.service.VoteService;
 import kr.itkoo.voting.util.JwtUtil;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -61,7 +59,7 @@ public class VoteController {
 			log.info(responseData.toString());
 		} catch (NoSuchElementException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,
-				voteResponse);
+				null);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -96,7 +94,7 @@ public class VoteController {
 			log.info(responseData.toString());
 		} catch (NoSuchElementException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
-				createVoteResponse);
+				null);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -125,7 +123,7 @@ public class VoteController {
 
 		} catch (NoSuchElementException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,
-				updateVoteResponse);
+				null);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -146,7 +144,7 @@ public class VoteController {
 				new DeleteVoteResponse(id));
 		} catch (Exception e) {
 			responseData = new ResponseData<>(StatusCode.BAD_REQUEST,
-				ResponseMessage.NOT_FOUND_VOTE, new DeleteVoteResponse(id));
+				ResponseMessage.NOT_FOUND_VOTE, null);
 			log.error(e.getMessage());
 		}
 		return responseData;
@@ -156,7 +154,7 @@ public class VoteController {
 	public ResponseData<VoteParticipateResponse> participateVote(
 		@PathVariable("voteId") Long voteId, @PathVariable("voteItemId") Long voteItemId,
 		HttpServletRequest request) {
-		ResponseData<VoteParticipateResponse> responseData = null;
+		ResponseData<VoteParticipateResponse> responseData;
 		Long userId = null;
 		String authenticationHeader = request.getHeader("Authorization");
 
@@ -179,18 +177,15 @@ public class VoteController {
 		// 3. 투표 참여 정보 테이블에 저장
 		try {
 			Long voteParticipantId = voteParticipantService.save(voteParticipant);
-
 			// 3-1. 응답 객체 생성 후 리턴
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
 				new VoteParticipateResponse(voteParticipantId));
-
-			return responseData;
 		} catch (Exception e) {
 			// 3-2. DB 에러시 처리(try-catch 또는 exception 처리)
 			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
 				ResponseMessage.FAILED_TO_SAVE_VOTE_PARTICIPANT, null);
 			log.error(e.toString());
-			return responseData;
 		}
+		return responseData;
 	}
 }
