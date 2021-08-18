@@ -6,7 +6,9 @@ import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -25,6 +27,9 @@ public class VoteItem {
     private Long updatedAt;
 
     private Long createdAt;
+
+    @ManyToOne(fetch = LAZY)
+    private Vote vote;
 
     //JPA 프록시 객체 관련해서 명세상만 필요하므로 protected로 제한
     protected VoteItem() {}
