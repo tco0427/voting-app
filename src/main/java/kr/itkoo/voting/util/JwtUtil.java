@@ -14,36 +14,39 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil implements Serializable {
-
     @Value("${spring.jwt.secret}")
-    private String secretKey;
+    private String JWT_SECRET_KEY;
 
     @Value("${spring.jwt.subject}")
-    private String subject;
+    private String JWT_SUBJECT;
+
+    @Value("${spring.jwt.claims.user-id}")
+    private String USER_ID_CLAIM;
+
+    @Value("${spring.jwt.claims.platform-id}")
+    private String PLATFORM_ID_CLAIM;
 
     public static final long JWT_TOKEN_EXPIRATION = 10 * 60 * 60;
 
     /**
      * 토큰 발급
-     *
      * @param platformId String 플랫폼 고유 id
      * @return String
      */
-    public String generateToken(long userId, int platformId) {
+    public String generateToken(long userId, int platformId){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("uid", userId);
-        claims.put("pid", platformId);
+        claims.put(USER_ID_CLAIM, userId);
+        claims.put(PLATFORM_ID_CLAIM, platformId);
 
         return Jwts.builder().setHeaderParam("typ", "JWT")
-            .setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_EXPIRATION * 1000))
-            .signWith(SignatureAlgorithm.HS512, secretKey).compact();
+                .setClaims(claims).setSubject(JWT_SUBJECT).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_EXPIRATION * 1000))
+                .signWith(SignatureAlgorithm.HS512, JWT_SECRET_KEY).compact();
     }
 
     /**
      * 토큰에 저장된 정보(claim) 얻기
-     *
-     * @param token          String
+     * @param token String
      * @param claimsResolver Function<
      * @return T
      */
@@ -54,35 +57,48 @@ public class JwtUtil implements Serializable {
 
     /**
      * 토큰에 저장된 정보(claim) 얻기
-     *
      * @param token String
      * @return Claims
      */
     private Claims getAllClaimsByToken(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(JWT_SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
     /**
      * 토큰 만료일 얻기
-     *
      * @param token String
      * @return Date
      */
-    public Date getExpirationDateByToken(String token) {
+    public Date getExpirationDateByToken(String token){
         return getClaimByToken(token, Claims::getExpiration);
     }
 
-    public Long getUserIdByToken(String token) {
-        return 1L;
+    /**
+     * 토큰값에서 유저 아이디를 가져옴
+     * @param token String
+     * @return Long
+     */
+    public Long getUserIdByToken(String token){
+        Claims claims = getAllClaimsByToken(token);
+        return claims.get(USER_ID_CLAIM, Long.class);
+    }
+
+    /**
+     * 토큰값에서 플랫폼 아이디를 가져옴
+     * @param token String
+     * @return Long
+     */
+    public Long getPlatformIdByToken(String token){
+        Claims claims = getAllClaimsByToken(token);
+        return claims.get(PLATFORM_ID_CLAIM, Long.class);
     }
 
     /**
      * 토큰 만료여부 판별
-     *
      * @param token String
      * @return boolean
      */
-    public Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token){
         final Date expirationDate = getExpirationDateByToken(token);
         return expirationDate.before(new Date());
     }

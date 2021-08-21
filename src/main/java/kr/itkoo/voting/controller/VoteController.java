@@ -182,10 +182,9 @@ public class VoteController {
 				new VoteParticipateResponse(voteParticipantId));
 		} catch (Exception e) {
 			// 3-2. DB 에러시 처리(try-catch 또는 exception 처리)
-				ResponseMessage.FAILED_TO_SAVE_VOTE_PARTICIPANT, null);
+			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.FAILED_TO_SAVE_VOTE_PARTICIPANT, null);
 			log.error(e.toString());
 		}
 		return responseData;
 	}
-			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
 }
