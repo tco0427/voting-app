@@ -1,15 +1,11 @@
 package kr.itkoo.voting.domain.dto.request;
 
 import kr.itkoo.voting.domain.entity.User;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import java.time.Instant;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class SignUpRequest {
 
     private String name;

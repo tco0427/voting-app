@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
+import javax.persistence.*;
+
+import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -28,6 +28,9 @@ public class VoteItem {
     private Integer updatedAt;
 
     private Integer createdAt;
+
+    @ManyToOne(fetch = LAZY)
+    private Vote vote;
 
     //JPA 프록시 객체 관련해서 명세상만 필요하므로 protected로 제한
     protected VoteItem() {

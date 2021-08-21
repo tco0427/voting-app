@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class VoteParticipateResponse {
-
-    Long id;
+public class UpdateVoteResponse {
+    private Long id;
+    private String title;
+    private Integer updatedAt;
 }

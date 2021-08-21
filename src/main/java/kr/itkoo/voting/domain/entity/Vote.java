@@ -8,6 +8,9 @@ import lombok.ToString;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 
@@ -26,11 +29,10 @@ public class Vote {
 
     private String title;
 
-    @Column(nullable = true)
     private Integer updatedAt;
 
     private Integer createdAt;
 
-    @OneToMany
+    @OneToMany(mappedBy = "vote")
     private List<VoteItem> voteItems = new ArrayList<>();
 }
