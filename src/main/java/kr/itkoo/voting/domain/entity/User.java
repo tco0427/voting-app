@@ -22,7 +22,7 @@ public class User {
 
     private String platformCode;
 
-    private int platformId;
+    private Integer platformId;
 
     private String name;
 

@@ -1,10 +1,12 @@
 package kr.itkoo.voting.controller;
 
+import java.util.List;
 import java.util.Optional;
 import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
 import kr.itkoo.voting.domain.dto.response.CreateVoteItemResponse;
+import kr.itkoo.voting.domain.dto.response.VoteItemResponse;
 import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteItem;
 import kr.itkoo.voting.exception.NotFoundUserException;
@@ -12,11 +14,7 @@ import kr.itkoo.voting.service.VoteItemService;
 import kr.itkoo.voting.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j

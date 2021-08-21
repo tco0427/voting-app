@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class VoteService {
 
     private final VoteRepository voteRepository;
@@ -23,6 +24,7 @@ public class VoteService {
         return voteRepository.findAll();
     }
 
+    @Transactional
     public Long join(Vote vote) {
         Vote save = voteRepository.save(vote);
         return save.getId();
