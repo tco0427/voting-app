@@ -21,8 +21,6 @@ public class VoteItem {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private Long voteId;
-
     private String name;
 
     private Integer updatedAt;

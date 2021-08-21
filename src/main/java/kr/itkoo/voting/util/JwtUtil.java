@@ -20,10 +20,10 @@ public class JwtUtil implements Serializable {
     @Value("${spring.jwt.subject}")
     private String JWT_SUBJECT;
 
-    @Value("${spring.jwt.claims.userId}")
+    @Value("${spring.jwt.claims.user-id}")
     private String USER_ID_CLAIM;
 
-    @Value("${spring.jwt.claims.platformId}")
+    @Value("${spring.jwt.claims.platform-id}")
     private String PLATFORM_ID_CLAIM;
 
     public static final long JWT_TOKEN_EXPIRATION = 10 * 60 * 60;
@@ -35,8 +35,8 @@ public class JwtUtil implements Serializable {
      */
     public String generateToken(long userId, int platformId){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("uid", userId);
-        claims.put("pid", platformId);
+        claims.put(USER_ID_CLAIM, userId);
+        claims.put(PLATFORM_ID_CLAIM, platformId);
 
         return Jwts.builder().setHeaderParam("typ", "JWT")
                 .setClaims(claims).setSubject(JWT_SUBJECT).setIssuedAt(new Date(System.currentTimeMillis()))
