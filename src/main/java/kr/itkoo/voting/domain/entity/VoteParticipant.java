@@ -15,6 +15,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @ToString
 public class VoteParticipant {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -32,5 +33,6 @@ public class VoteParticipant {
         this.voteItemId = voteItemId;
     }
 
-    protected VoteParticipant() {}
+    protected VoteParticipant() {
+    }
 }

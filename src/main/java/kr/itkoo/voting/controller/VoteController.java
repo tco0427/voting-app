@@ -36,10 +36,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class VoteController {
 
-	private final UserService userService;
-	private final VoteService voteService;
-	private final VoteParticipantService voteParticipantService;
-	private final JwtUtil jwtUtil;
+    private final UserService userService;
+    private final VoteService voteService;
+    private final VoteParticipantService voteParticipantService;
+    private final JwtUtil jwtUtil;
 
 	/**
 	 * 투표 정보 조회
@@ -65,8 +65,8 @@ public class VoteController {
 			log.error(e.getMessage());
 		}
 
-		return responseData;
-	}
+        return responseData;
+    }
 
 	/**
 	 * 투표 생성
@@ -76,17 +76,17 @@ public class VoteController {
 	public ResponseData<CreateVoteResponse> saveVote(
 		@RequestBody @Valid CreateVoteRequest request) {
 
-		ResponseData<CreateVoteResponse> responseData = null;
-		CreateVoteResponse createVoteResponse = null;
-		try {
-			Vote vote = new Vote();
-			User user = userService.findById(request.getUserId()).get();
+        ResponseData<CreateVoteResponse> responseData = null;
+        CreateVoteResponse createVoteResponse = null;
+        try {
+            Vote vote = new Vote();
+            User user = userService.findById(request.getUserId()).get();
 
-			vote.setUser(user);
-			vote.setTitle(request.getTitle());
-			vote.setCreatedAt((int) System.currentTimeMillis());
+            vote.setUser(user);
+            vote.setTitle(request.getTitle());
+            vote.setCreatedAt((int) System.currentTimeMillis());
 
-			Long id = voteService.join(vote);
+            Long id = voteService.join(vote);
 
 			createVoteResponse = new CreateVoteResponse(id, vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
@@ -100,8 +100,8 @@ public class VoteController {
 			log.error(e.getMessage());
 		}
 
-		return responseData;
-	}
+        return responseData;
+    }
 
 	/**
 	 * 투표 정보 수정
@@ -116,10 +116,10 @@ public class VoteController {
 			voteService.update(id, request.getTitle(), (int) System.currentTimeMillis());
 			Vote vote = voteService.findById(id).get();
 
-			updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle(),
-				vote.getUpdatedAt());
-			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
-				updateVoteResponse);
+            updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle(),
+                vote.getUpdatedAt());
+            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
+                updateVoteResponse);
 
 		} catch (NoSuchElementException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,
@@ -158,21 +158,21 @@ public class VoteController {
 		Long userId = null;
 		String authenticationHeader = request.getHeader("Authorization");
 
-		// 1. 헤더에서 토큰값이 있는지 체크 & userId 가져오기
-		if (authenticationHeader != null && authenticationHeader.startsWith("Bearer")) {
-			String token = authenticationHeader.replace("Bearer", "");
-			userId = jwtUtil.getUserIdByToken(token);
-		}
+        // 1. 헤더에서 토큰값이 있는지 체크 & userId 가져오기
+        if (authenticationHeader != null && authenticationHeader.startsWith("Bearer")) {
+            String token = authenticationHeader.replace("Bearer", "");
+            userId = jwtUtil.getUserIdByToken(token);
+        }
 
-		// 1-2. 없을경우 에러 처리
-		if (userId == null) {
-			responseData = new ResponseData<>(StatusCode.UNAUTHORIZED,
-				ResponseMessage.NOT_FOUND_USER, null);
-			return responseData;
-		}
+        // 1-2. 없을경우 에러 처리
+        if (userId == null) {
+            responseData = new ResponseData<>(StatusCode.UNAUTHORIZED,
+                ResponseMessage.NOT_FOUND_USER, null);
+            return responseData;
+        }
 
-		// 2. 투표 참여 정보 객체 저장
-		VoteParticipant voteParticipant = new VoteParticipant(userId, voteId, voteItemId);
+        // 2. 투표 참여 정보 객체 저장
+        VoteParticipant voteParticipant = new VoteParticipant(userId, voteId, voteItemId);
 
 		// 3. 투표 참여 정보 테이블에 저장
 		try {
@@ -182,10 +182,10 @@ public class VoteController {
 				new VoteParticipateResponse(voteParticipantId));
 		} catch (Exception e) {
 			// 3-2. DB 에러시 처리(try-catch 또는 exception 처리)
-			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
 				ResponseMessage.FAILED_TO_SAVE_VOTE_PARTICIPANT, null);
 			log.error(e.toString());
 		}
 		return responseData;
 	}
+			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
 }

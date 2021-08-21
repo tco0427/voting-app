@@ -15,6 +15,7 @@ import static javax.persistence.GenerationType.*;
 @Entity
 @ToString
 public class User {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -35,9 +36,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
 
-    protected User(){}
+    protected User() {
+    }
 
-    public User(String platformCode, int platformId, String name, String imageUrl, long updatedAt, long createdAt) {
+    public User(String platformCode, int platformId, String name, String imageUrl, long updatedAt,
+        long createdAt) {
         this.platformCode = platformCode;
         this.platformId = platformId;
         this.name = name;
