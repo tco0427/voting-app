@@ -14,6 +14,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil implements Serializable {
+
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
@@ -24,23 +25,25 @@ public class JwtUtil implements Serializable {
 
     /**
      * 토큰 발급
+     *
      * @param platformId String 플랫폼 고유 id
      * @return String
      */
-    public String generateToken(long userId, int platformId){
+    public String generateToken(long userId, int platformId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("uid", userId);
         claims.put("pid", platformId);
 
         return Jwts.builder().setHeaderParam("typ", "JWT")
-                .setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_EXPIRATION * 1000))
-                .signWith(SignatureAlgorithm.HS512, secretKey).compact();
+            .setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_EXPIRATION * 1000))
+            .signWith(SignatureAlgorithm.HS512, secretKey).compact();
     }
 
     /**
      * 토큰에 저장된 정보(claim) 얻기
-     * @param token String
+     *
+     * @param token          String
      * @param claimsResolver Function<
      * @return T
      */
@@ -51,6 +54,7 @@ public class JwtUtil implements Serializable {
 
     /**
      * 토큰에 저장된 정보(claim) 얻기
+     *
      * @param token String
      * @return Claims
      */
@@ -60,23 +64,25 @@ public class JwtUtil implements Serializable {
 
     /**
      * 토큰 만료일 얻기
+     *
      * @param token String
      * @return Date
      */
-    public Date getExpirationDateByToken(String token){
+    public Date getExpirationDateByToken(String token) {
         return getClaimByToken(token, Claims::getExpiration);
     }
 
-    public Long getUserIdByToken(String token){
+    public Long getUserIdByToken(String token) {
         return 1L;
     }
 
     /**
      * 토큰 만료여부 판별
+     *
      * @param token String
      * @return boolean
      */
-    public Boolean isTokenExpired(String token){
+    public Boolean isTokenExpired(String token) {
         final Date expirationDate = getExpirationDateByToken(token);
         return expirationDate.before(new Date());
     }

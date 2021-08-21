@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
+
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseData<SignUpResponse> signUp(@RequestBody SignUpRequest signUpRequest){
+    public ResponseData<SignUpResponse> signUp(@RequestBody SignUpRequest signUpRequest) {
         log.info(signUpRequest.toString());
         ResponseData<SignUpResponse> responseData = null;
         try {
@@ -34,7 +35,7 @@ public class AuthController {
             SignUpResponse jwtResponse = new SignUpResponse(savedUser.getId(), token);
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, jwtResponse);
             log.info(responseData.toString());
-        } catch(Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
