@@ -1,5 +1,6 @@
 package kr.itkoo.voting.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class VoteItem {
 
     private Integer createdAt;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     private Vote vote;
 

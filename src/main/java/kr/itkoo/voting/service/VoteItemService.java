@@ -2,17 +2,22 @@ package kr.itkoo.voting.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteItem;
 import kr.itkoo.voting.domain.repository.VoteItemRepository;
+import kr.itkoo.voting.domain.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class VoteItemService {
 
     private final VoteItemRepository voteItemRepository;
+    private final VoteRepository voteRepository;
 
     public Optional<VoteItem> findById(Long id) {
         return voteItemRepository.findById(id);
@@ -22,6 +27,15 @@ public class VoteItemService {
         return voteItemRepository.findAll();
     }
 
+    public List<VoteItem> findAllByVoteId(Long voteId) throws Exception {
+        Optional<Vote> voteOptional = voteRepository.findById(voteId);
+        if(voteOptional.isEmpty()){
+            throw new Exception();
+        }
+        return voteItemRepository.findByVote(voteOptional.get());
+    }
+
+    @Transactional
     public Long save(VoteItem voteItem) {
         validateDuplicateItem(voteItem);
         VoteItem save = voteItemRepository.save(voteItem);
