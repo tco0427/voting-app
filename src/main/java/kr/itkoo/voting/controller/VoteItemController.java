@@ -56,4 +56,19 @@ public class VoteItemController {
 
         return responseData;
     }
+
+    @GetMapping("/{voteId}")
+    public ResponseData<VoteItemResponse> getVoteItemList(@PathVariable("voteId") Long voteId){
+        ResponseData<VoteItemResponse> responseData = null;
+
+        try{
+            List<VoteItem> voteItems = voteItemService.findAllByVoteId(voteId);
+
+            responseData = new ResponseData<>(StatusCode.OK,ResponseMessage.SUCCESS,new VoteItemResponse(voteItems));
+
+        }catch(Exception e){
+            log.error(e.getMessage());
+        }
+        return responseData;
+    }
 }
