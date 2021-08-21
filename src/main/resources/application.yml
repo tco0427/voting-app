@@ -8,11 +8,13 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  jwt:
+    secret: dlwltmtmvmfldqnxmtmxjel
+    subject: voteJwt
+    claims:
+      user-id: uid
+      platform-id: pid
 
 logging.level:
   root: info
   org.hibernate.type: trace
-
-jwt:
-  secret: dlwltmtmvmfldqnxmtmxjel
-  subject: voteJwt

@@ -12,7 +12,7 @@ public class VoteParticipantService {
 
     private final VoteParticipantRepository voteParticipantRepository;
 
-    public Long save(VoteParticipant voteParticipant){
+    public Long save(VoteParticipant voteParticipant) {
         VoteParticipant savedVoteParticipant = voteParticipantRepository.save(voteParticipant);
 
         return savedVoteParticipant.getId();

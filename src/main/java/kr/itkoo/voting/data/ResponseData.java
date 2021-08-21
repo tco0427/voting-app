@@ -9,6 +9,7 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 public class ResponseData<T> {
+
     @ApiModelProperty(value = "상태코드")
     private int status;
 

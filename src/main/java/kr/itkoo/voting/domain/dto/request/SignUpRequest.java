@@ -7,12 +7,13 @@ import java.time.Instant;
 
 @Data
 public class SignUpRequest {
+
     private String name;
     private String imageUrl;
     private String platformCode;
     private int platformId;
 
-    public User toUserEntity(){
+    public User toUserEntity() {
         long createdAt = Instant.now().getEpochSecond();
         return new User(this.platformCode, this.platformId, this.name, this.imageUrl, createdAt);
     }
