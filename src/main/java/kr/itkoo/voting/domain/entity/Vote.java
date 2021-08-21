@@ -1,5 +1,7 @@
 package kr.itkoo.voting.domain.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,9 +12,13 @@ import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 
 @Entity
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 public class Vote {
-    @Id @GeneratedValue(strategy= IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -24,4 +30,7 @@ public class Vote {
     private Integer updatedAt;
 
     private Integer createdAt;
+
+    @OneToMany
+    private List<VoteItem> voteItems = new ArrayList<>();
 }

@@ -4,5 +4,6 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class VoteParticipateResponse {
+
     Long id;
 }
