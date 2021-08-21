@@ -23,16 +23,16 @@ public class UserController {
 
     @ApiOperation(value = "", notes = "id값으로 회원 정보 조회")
     @GetMapping("/{id}")
-    public ResponseData<User> getUserById(@ApiParam("회원 id") @PathVariable("id") Long id){
+    public ResponseData<User> getUserById(@ApiParam("회원 id") @PathVariable("id") Long id) {
         log.info("getUserById : " + id);
         ResponseData<User> responseData = null;
         try {
             User user = userService.findById(id).get(); //비어있는 경우 NoSuchElementException
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, user);
             log.info(responseData.toString());
-        }catch(NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             log.error("Optional Error" + e.getMessage());
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
