@@ -33,4 +33,9 @@ public class VoteItem {
     //JPA 프록시 객체 관련해서 명세상만 필요하므로 protected로 제한
     protected VoteItem() {
     }
+
+    public VoteItem(Vote vote, String name){
+        this.vote = vote;
+        this.name = name;
+    }
 }
