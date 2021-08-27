@@ -1,6 +1,7 @@
 package kr.itkoo.voting.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
@@ -33,27 +34,20 @@ public class VoteItemController {
         try {
             // 1. 투표 아이디 유효성 체크
             // 1-2. 없을겨우 에러 처리
-            Optional<Vote> vote = voteService.findById(voteId);
-            if (vote.isEmpty()) {
-                throw new NotFoundUserException();
-            }
+            Vote vote = voteService.findById(voteId);
 
             // 2. 투표 아이템 저장
-            VoteItem voteItem = new VoteItem(vote.get(), name);
+            VoteItem voteItem = new VoteItem(vote, name);
             Long voteItemId = voteItemService.save(voteItem);
             CreateVoteItemResponse voteItemResponse = new CreateVoteItemResponse(voteItemId, name);
 
-            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
-                voteItemResponse);
-        } catch (NotFoundUserException ne) {
-            responseData = new ResponseData<>(ne.getCode(), ne.getMessage(), null);
-            return responseData;
-        } catch (Exception e) {
-            responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
-                ResponseMessage.NOT_FOUND_USER, null);
+            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteItemResponse);
+        } catch(NoSuchElementException e){
+            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE, null);
+        } catch(Exception e) {
+            responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.NOT_FOUND_USER, null);
             return responseData;
         }
-
         return responseData;
     }
 

@@ -27,7 +27,7 @@ public class UserController {
         log.info("getUserById : " + id);
         ResponseData<User> responseData = null;
         try {
-            User user = userService.findById(id).get(); //비어있는 경우 NoSuchElementException
+            User user = userService.findById(id); //비어있는 경우 NoSuchElementException
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, user);
             log.info(responseData.toString());
         } catch (NoSuchElementException e) {
