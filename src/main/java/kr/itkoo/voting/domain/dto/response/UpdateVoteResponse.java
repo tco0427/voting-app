@@ -8,5 +8,4 @@ import lombok.Data;
 public class UpdateVoteResponse {
     private Long id;
     private String title;
-    private Integer updatedAt;
 }

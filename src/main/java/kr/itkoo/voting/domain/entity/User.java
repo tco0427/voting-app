@@ -1,7 +1,6 @@
 package kr.itkoo.voting.domain.entity;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -14,7 +13,7 @@ import static javax.persistence.GenerationType.*;
 @Getter
 @Entity
 @ToString
-public class User {
+public class User extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -28,32 +27,15 @@ public class User {
 
     private String imageUrl;
 
-    @Column(nullable = true)
-    private long updatedAt;
-
-    private long createdAt;
-
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
 
-    protected User() {
-    }
+    protected User() {}
 
-    public User(String platformCode, int platformId, String name, String imageUrl, long updatedAt,
-        long createdAt) {
+    public User(String platformCode, int platformId, String name, String imageUrl) {
         this.platformCode = platformCode;
         this.platformId = platformId;
         this.name = name;
         this.imageUrl = imageUrl;
-        this.updatedAt = updatedAt;
-        this.createdAt = createdAt;
-    }
-
-    public User(String platformCode, int platformId, String name, String imageUrl, long createdAt) {
-        this.platformCode = platformCode;
-        this.platformId = platformId;
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.createdAt = createdAt;
     }
 }
