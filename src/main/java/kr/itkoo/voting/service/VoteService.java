@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -16,8 +17,9 @@ public class VoteService {
 
     private final VoteRepository voteRepository;
 
-    public Optional<Vote> findById(Long id) {
-        return voteRepository.findById(id);
+    public Vote findById(Long id) {
+        return voteRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public List<Vote> findAll() {

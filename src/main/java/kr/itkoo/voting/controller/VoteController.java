@@ -53,7 +53,7 @@ public class VoteController {
 
 		VoteResponse voteResponse = null;
 		try {
-			Vote vote = voteService.findById(id).get();
+			Vote vote = voteService.findById(id);
 			voteResponse = new VoteResponse(vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteResponse);
 			log.info(responseData.toString());
@@ -80,7 +80,7 @@ public class VoteController {
         CreateVoteResponse createVoteResponse;
         try {
             Vote vote = new Vote();
-            User user = userService.findById(request.getUserId()).get();
+            User user = userService.findById(request.getUserId());
 
             vote.setUser(user);
             vote.setTitle(request.getTitle());
@@ -113,7 +113,7 @@ public class VoteController {
 		UpdateVoteResponse updateVoteResponse = null;
 		try {
 			voteService.update(id, request.getTitle());
-			Vote vote = voteService.findById(id).get();
+			Vote vote = voteService.findById(id);
 
             updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle());
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,

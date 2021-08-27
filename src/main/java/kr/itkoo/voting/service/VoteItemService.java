@@ -1,6 +1,7 @@
 package kr.itkoo.voting.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import kr.itkoo.voting.domain.entity.Vote;
@@ -19,8 +20,9 @@ public class VoteItemService {
     private final VoteItemRepository voteItemRepository;
     private final VoteRepository voteRepository;
 
-    public Optional<VoteItem> findById(Long id) {
-        return voteItemRepository.findById(id);
+    public VoteItem findById(Long id) {
+        return voteItemRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public List<VoteItem> findAll() {
