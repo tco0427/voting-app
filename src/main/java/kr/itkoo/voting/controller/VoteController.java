@@ -77,14 +77,13 @@ public class VoteController {
 		@RequestBody @Valid CreateVoteRequest request) {
 
         ResponseData<CreateVoteResponse> responseData = null;
-        CreateVoteResponse createVoteResponse = null;
+        CreateVoteResponse createVoteResponse;
         try {
             Vote vote = new Vote();
             User user = userService.findById(request.getUserId()).get();
 
             vote.setUser(user);
             vote.setTitle(request.getTitle());
-            vote.setCreatedAt((int) System.currentTimeMillis());
 
             Long id = voteService.join(vote);
 
@@ -113,11 +112,10 @@ public class VoteController {
 		ResponseData<UpdateVoteResponse> responseData = null;
 		UpdateVoteResponse updateVoteResponse = null;
 		try {
-			voteService.update(id, request.getTitle(), (int) System.currentTimeMillis());
+			voteService.update(id, request.getTitle());
 			Vote vote = voteService.findById(id).get();
 
-            updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle(),
-                vote.getUpdatedAt());
+            updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle());
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
                 updateVoteResponse);
 

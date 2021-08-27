@@ -50,10 +50,9 @@ public class VoteItemService {
     }
 
     @Transactional
-    public void update(Long id, String name, Integer updatedAt) {
+    public void update(Long id, String name) {
         VoteItem voteItem = voteItemRepository.findById(id).get();
         voteItem.setName(name);
-        voteItem.setUpdatedAt(updatedAt);
     }
 
     public void deleteById(Long id) {
