@@ -2,20 +2,21 @@ package kr.itkoo.voting.controller;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
 import kr.itkoo.voting.domain.dto.response.CreateVoteItemResponse;
 import kr.itkoo.voting.domain.dto.response.VoteItemResponse;
+import kr.itkoo.voting.domain.dto.response.VoteWithItemResponse;
 import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteItem;
-import kr.itkoo.voting.exception.NotFoundUserException;
 import kr.itkoo.voting.service.VoteItemService;
 import kr.itkoo.voting.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @Slf4j
@@ -52,14 +53,17 @@ public class VoteItemController {
     }
 
     @GetMapping("/{voteId}")
-    public ResponseData<VoteItemResponse> getVoteItemList(@PathVariable("voteId") Long voteId){
-        ResponseData<VoteItemResponse> responseData = null;
+    public ResponseData<VoteWithItemResponse> getVoteItemList(@PathVariable("voteId") Long voteId){
+        ResponseData<VoteWithItemResponse> responseData = null;
 
         try{
+            Vote vote = voteService.findById(voteId);
             List<VoteItem> voteItems = voteItemService.findAllByVoteId(voteId);
+            List<VoteItemResponse> result = voteItems.stream()
+                    .map(v -> new VoteItemResponse(v))
+                    .collect(toList());
 
-            responseData = new ResponseData<>(StatusCode.OK,ResponseMessage.SUCCESS,new VoteItemResponse(voteItems));
-
+            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, new VoteWithItemResponse(voteId, vote.getTitle(), result));
         }catch(Exception e){
             log.error(e.getMessage());
         }
