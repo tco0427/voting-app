@@ -4,6 +4,8 @@ spring:
     username: dgrowth
     password: elrmfhtm@!
   jpa:
+#    hibernate:
+#      ddl-auto: update
     properties:
       hibernate:
         show_sql: true

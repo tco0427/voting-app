@@ -4,10 +4,14 @@ import kr.itkoo.voting.domain.entity.VoteItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 public class VoteItemResponse {
-    private List<VoteItem> list;
+    private Long id;
+    private String name;
+
+    public VoteItemResponse(VoteItem voteItem){
+        this.id = voteItem.getId();
+        this.name = voteItem.getName();
+    }
 }
