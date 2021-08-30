@@ -1,6 +1,5 @@
 package kr.itkoo.voting.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +15,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @AllArgsConstructor
 @ToString
-public class VoteItem {
+public class VoteItem extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -24,17 +23,11 @@ public class VoteItem {
 
     private String name;
 
-    private Integer updatedAt;
-
-    private Integer createdAt;
-
-    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     private Vote vote;
 
     //JPA 프록시 객체 관련해서 명세상만 필요하므로 protected로 제한
-    protected VoteItem() {
-    }
+    protected VoteItem() {}
 
     public VoteItem(Vote vote, String name){
         this.vote = vote;

@@ -18,7 +18,7 @@ import static javax.persistence.GenerationType.*;
 @Getter
 @Setter
 @ToString
-public class Vote {
+public class Vote extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -28,10 +28,6 @@ public class Vote {
     private User user;
 
     private String title;
-
-    private Integer updatedAt;
-
-    private Integer createdAt;
 
     @OneToMany(mappedBy = "vote")
     private List<VoteItem> voteItems = new ArrayList<>();
