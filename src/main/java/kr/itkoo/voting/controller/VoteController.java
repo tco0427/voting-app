@@ -19,6 +19,7 @@ import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteItem;
 import kr.itkoo.voting.domain.entity.VoteParticipant;
+import kr.itkoo.voting.exception.NotFoundUserException;
 import kr.itkoo.voting.service.UserService;
 import kr.itkoo.voting.service.VoteParticipantService;
 import kr.itkoo.voting.service.VoteService;
@@ -97,7 +98,7 @@ public class VoteController {
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
 				createVoteResponse);
 			log.info(responseData.toString());
-		} catch (NoSuchElementException e) {
+		} catch (NotFoundUserException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
 				null);
 			log.error("Optional Error" + e.getMessage());
@@ -219,10 +220,9 @@ public class VoteController {
 
 				responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, new VoteByUserResponse(user.getId(), voteWithItemResponseList));
 				log.info(responseData.toString());
-			} catch (NoSuchElementException e) {
-				responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,
-						null);
-				log.error("Optional Error" + e.getMessage());
+			} catch (NotFoundUserException e){
+				log.error(e.getMessage());
+				responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER, null);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
