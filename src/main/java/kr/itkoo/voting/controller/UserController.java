@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam;
 import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
+import kr.itkoo.voting.domain.dto.response.UserResponse;
 import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.exception.NotFoundUserException;
 import kr.itkoo.voting.service.UserService;
@@ -22,12 +23,18 @@ public class UserController {
 
     @ApiOperation(value = "", notes = "id값으로 회원 정보 조회")
     @GetMapping("/{id}")
-    public ResponseData<User> getUserById(@ApiParam("회원 id") @PathVariable("id") Long id) {
+    public ResponseData<UserResponse> getUserById(@ApiParam("회원 id") @PathVariable("id") Long id) {
         log.info("getUserById : " + id);
-        ResponseData<User> responseData = null;
+
+        ResponseData<UserResponse> responseData = null;
+        UserResponse userResponse = null;
+
         try {
-            User user = userService.findById(id); //비어있는 경우 NoSuchElementException
-            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, user);
+            User user = userService.findById(id);
+
+            userResponse = new UserResponse(user.getId(), user.getName());
+            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, userResponse);
+
             log.info(responseData.toString());
         } catch (NotFoundUserException e) {
             log.error("Optional Error" + e.getMessage());
