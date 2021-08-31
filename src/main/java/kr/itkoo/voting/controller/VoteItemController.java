@@ -10,6 +10,7 @@ import kr.itkoo.voting.domain.dto.response.VoteItemResponse;
 import kr.itkoo.voting.domain.dto.response.VoteWithItemResponse;
 import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteItem;
+import kr.itkoo.voting.exception.NotFoundUserException;
 import kr.itkoo.voting.service.VoteItemService;
 import kr.itkoo.voting.service.VoteService;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class VoteItemController {
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteItemResponse);
         } catch(NoSuchElementException e){
             responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE, null);
-        } catch(Exception e) {
+        } catch(NotFoundUserException e) {
             responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.NOT_FOUND_USER, null);
             return responseData;
         }

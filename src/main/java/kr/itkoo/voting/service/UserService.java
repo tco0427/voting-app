@@ -2,12 +2,10 @@ package kr.itkoo.voting.service;
 
 import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.domain.repository.UserRepository;
+import kr.itkoo.voting.exception.NotFoundUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +16,7 @@ public class UserService {
 
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(NotFoundUserException::new);
     }
 
     @Transactional

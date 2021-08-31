@@ -6,12 +6,11 @@ import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
 import kr.itkoo.voting.domain.entity.User;
+import kr.itkoo.voting.exception.NotFoundUserException;
 import kr.itkoo.voting.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -30,7 +29,7 @@ public class UserController {
             User user = userService.findById(id); //비어있는 경우 NoSuchElementException
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, user);
             log.info(responseData.toString());
-        } catch (NoSuchElementException e) {
+        } catch (NotFoundUserException e) {
             log.error("Optional Error" + e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
