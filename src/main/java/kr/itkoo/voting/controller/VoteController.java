@@ -3,6 +3,9 @@ package kr.itkoo.voting.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -14,7 +17,9 @@ import kr.itkoo.voting.domain.dto.request.UpdateVoteRequest;
 import kr.itkoo.voting.domain.dto.response.*;
 import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.domain.entity.Vote;
+import kr.itkoo.voting.domain.entity.VoteItem;
 import kr.itkoo.voting.domain.entity.VoteParticipant;
+import kr.itkoo.voting.exception.NotFoundUserException;
 import kr.itkoo.voting.service.UserService;
 import kr.itkoo.voting.service.VoteParticipantService;
 import kr.itkoo.voting.service.VoteService;
@@ -29,6 +34,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api/vote")
@@ -91,7 +98,7 @@ public class VoteController {
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
 				createVoteResponse);
 			log.info(responseData.toString());
-		} catch (NoSuchElementException e) {
+		} catch (NotFoundUserException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
 				null);
 			log.error("Optional Error" + e.getMessage());
@@ -184,5 +191,41 @@ public class VoteController {
 			log.error(e.toString());
 		}
 		return responseData;
+	}
+
+	/**
+	 * 내가 만든 투표 목록 조회
+	 */
+	@ApiOperation(value = "회원별 투표 정보 조회", notes = "내가 만든 투표 목록 조회")
+	@GetMapping("/myVote/{memberId}")
+	public ResponseData<VoteByUserResponse> getVoteListByMember(@PathVariable @Valid Long memberId){
+			ResponseData<VoteByUserResponse> responseData = null;
+
+			try {
+				User user = userService.findById(memberId);
+				List<Vote> voteList = user.getVotes();
+
+				List<VoteWithItemResponse> voteWithItemResponseList = new ArrayList<>();
+
+				for (Vote vote : voteList) {
+					List<VoteItem> voteItems = vote.getVoteItems();
+					List<VoteItemResponse> voteItemResponseList = voteItems.stream()
+							.map(vi -> new VoteItemResponse(vi))
+							.collect(toList());
+
+					VoteWithItemResponse voteWithItemResponse = new VoteWithItemResponse(vote.getId(), vote.getTitle(), voteItemResponseList);
+
+					voteWithItemResponseList.add(voteWithItemResponse);
+				}
+
+				responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, new VoteByUserResponse(user.getId(), voteWithItemResponseList));
+				log.info(responseData.toString());
+			} catch (NotFoundUserException e){
+				log.error(e.getMessage());
+				responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER, null);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
+			return responseData;
 	}
 }
