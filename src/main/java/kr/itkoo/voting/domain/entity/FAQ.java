@@ -1,41 +1,46 @@
 package kr.itkoo.voting.domain.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import static javax.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.*;
+import kr.itkoo.voting.domain.dto.response.FAQResponse;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
 @ToString
 @NoArgsConstructor(access = PROTECTED)
-public class FAQ extends BaseEntity{
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
+public class FAQ extends BaseEntity {
 
-    private String title;
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	private Long id;
 
-    @Column(columnDefinition = "boolean default true")
-    private Boolean isVisible;
+	private String title;
 
-    private String content;
+	@Column(columnDefinition = "boolean default true")
+	private Boolean isVisible;
 
-    public FAQ(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
+	private String content;
 
-    public FAQ(Long id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
+	public FAQ(String title, String content) {
+		this.title = title;
+		this.content = content;
+	}
+
+	public FAQ(Long id, String title, String content) {
+		this.id = id;
+		this.title = title;
+		this.content = content;
+	}
+
+	public FAQResponse toFAQResponse() {
+		return new FAQResponse(this.title, this.content);
+	}
 }
