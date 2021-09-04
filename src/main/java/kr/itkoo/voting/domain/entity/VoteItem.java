@@ -1,20 +1,19 @@
 package kr.itkoo.voting.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Setter
 @Getter
 @AllArgsConstructor
-@ToString
+@ToString(of = {"id", "name"})
+@NoArgsConstructor(access = PROTECTED)
 public class VoteItem extends BaseEntity{
 
     @Id
@@ -25,9 +24,6 @@ public class VoteItem extends BaseEntity{
 
     @ManyToOne(fetch = LAZY)
     private Vote vote;
-
-    //JPA 프록시 객체 관련해서 명세상만 필요하므로 protected로 제한
-    protected VoteItem() {}
 
     public VoteItem(Vote vote, String name){
         this.vote = vote;
