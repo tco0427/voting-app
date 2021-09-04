@@ -1,5 +1,6 @@
 package kr.itkoo.voting.domain.entity;
 
+import kr.itkoo.voting.data.code.PlatformCode;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -19,7 +20,8 @@ public class User extends BaseEntity{
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private String platformCode;
+    @Enumerated(EnumType.STRING)
+    private PlatformCode platformCode;
 
     private Integer platformId;
 
@@ -32,7 +34,7 @@ public class User extends BaseEntity{
 
     protected User() {}
 
-    public User(String platformCode, int platformId, String name, String imageUrl) {
+    public User(PlatformCode platformCode, int platformId, String name, String imageUrl) {
         this.platformCode = platformCode;
         this.platformId = platformId;
         this.name = name;
