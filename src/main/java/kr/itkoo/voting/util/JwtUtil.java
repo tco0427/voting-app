@@ -1,8 +1,15 @@
 package kr.itkoo.voting.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import javax.servlet.http.HttpServletRequest;
+import kr.itkoo.voting.data.ResponseMessage;
+import kr.itkoo.voting.domain.entity.User;
+import kr.itkoo.voting.exception.NotFoundUserException;
+import kr.itkoo.voting.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +20,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil implements Serializable {
     @Value("${spring.jwt.secret}")
     private String JWT_SECRET_KEY;
@@ -25,6 +33,8 @@ public class JwtUtil implements Serializable {
 
     @Value("${spring.jwt.claims.platform-id}")
     private String PLATFORM_ID_CLAIM;
+
+    private final UserService userService;
 
     public static final long JWT_TOKEN_EXPIRATION = 10 * 60 * 60;
 
@@ -101,5 +111,42 @@ public class JwtUtil implements Serializable {
     public Boolean isTokenExpired(String token){
         final Date expirationDate = getExpirationDateByToken(token);
         return expirationDate.before(new Date());
+    }
+
+    /**
+     * 토큰의 유효성 체크
+     * @param token String
+     * @return Boolean
+     */
+    public Boolean isValidToken(String token){
+        // 1. 토큰 만료일을 체크한다
+        if(isTokenExpired(token)){
+            throw new JwtException(ResponseMessage.EXPIRED_TOKEN);
+        }
+
+        // 2. 토큰에서 userId값을 가져온다.
+        Long userId = getUserIdByToken(token);
+        if(userId == null){ // 3. userId 없을경우
+            throw new JwtException(ResponseMessage.INVALID_TOKEN);
+        }
+
+        // 4. userId로 DB 조회시 나오는 값이 없을 경우
+        User user = userService.findById(userId);
+
+        return true;
+    }
+
+    /**
+     * 헤더에서 토큰 정보를 가져옴
+     * @param request HttpServletRequest
+     * @return String
+     */
+    public String getTokenByHeader(HttpServletRequest request){
+        String authenticationHeader =  request.getHeader("Authorization");
+        if(authenticationHeader == null || !authenticationHeader.startsWith("Bearer")){
+            throw new JwtException(ResponseMessage.INVALID_HEADER);
+        }
+
+        return authenticationHeader.replace("Bearer", "");
     }
 }
