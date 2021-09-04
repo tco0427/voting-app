@@ -2,6 +2,7 @@ package kr.itkoo.voting.domain.entity;
 
 import kr.itkoo.voting.data.code.PlatformCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -10,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.GenerationType.*;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
 @ToString
+@NoArgsConstructor(access = PROTECTED)
 public class User extends BaseEntity{
 
     @Id
@@ -31,8 +34,6 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
-
-    protected User() {}
 
     public User(PlatformCode platformCode, int platformId, String name, String imageUrl) {
         this.platformCode = platformCode;
