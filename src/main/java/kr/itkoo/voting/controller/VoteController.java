@@ -1,6 +1,8 @@
 package kr.itkoo.voting.controller;
 
 
+import static java.util.stream.Collectors.toList;
+
 import io.jsonwebtoken.JwtException;
 import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
@@ -13,7 +15,14 @@ import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
 import kr.itkoo.voting.domain.dto.request.CreateVoteRequest;
 import kr.itkoo.voting.domain.dto.request.UpdateVoteRequest;
-import kr.itkoo.voting.domain.dto.response.*;
+import kr.itkoo.voting.domain.dto.response.CreateVoteResponse;
+import kr.itkoo.voting.domain.dto.response.DeleteVoteResponse;
+import kr.itkoo.voting.domain.dto.response.UpdateVoteResponse;
+import kr.itkoo.voting.domain.dto.response.VoteByUserResponse;
+import kr.itkoo.voting.domain.dto.response.VoteItemResponse;
+import kr.itkoo.voting.domain.dto.response.VoteParticipateResponse;
+import kr.itkoo.voting.domain.dto.response.VoteResponse;
+import kr.itkoo.voting.domain.dto.response.VoteWithItemResponse;
 import kr.itkoo.voting.domain.entity.User;
 import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteItem;
@@ -34,18 +43,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.util.stream.Collectors.toList;
-
 @RestController
 @RequestMapping("/api/vote")
 @RequiredArgsConstructor
 @Slf4j
 public class VoteController {
 
-    private final UserService userService;
-    private final VoteService voteService;
-    private final VoteParticipantService voteParticipantService;
-    private final JwtUtil jwtUtil;
+	private final UserService userService;
+	private final VoteService voteService;
+	private final VoteParticipantService voteParticipantService;
+	private final JwtUtil jwtUtil;
 
 	/**
 	 * 투표 정보 조회
@@ -69,8 +76,8 @@ public class VoteController {
 			log.error(e.getMessage());
 		}
 
-        return responseData;
-    }
+		return responseData;
+	}
 
 	/**
 	 * 투표 생성
@@ -83,24 +90,21 @@ public class VoteController {
 		ResponseData<CreateVoteResponse> responseData = null;
 		CreateVoteResponse createVoteResponse;
 
-        try {
+		try {
 			String token = jwtUtil.getTokenByHeader(httpServletRequest);
 			jwtUtil.isValidToken(token);
 			Long userId = jwtUtil.getUserIdByToken(token);
 
-            Vote vote = new Vote();
-            User user = userService.findById(userId);
+			User user = userService.findById(userId);
+			Vote vote = new Vote(user, request.getTitle());
 
-            vote.setUser(user);
-            vote.setTitle(request.getTitle());
-
-            Long id = voteService.join(vote);
+			Long id = voteService.join(vote);
 
 			createVoteResponse = new CreateVoteResponse(id, vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
 				createVoteResponse);
 			log.info(responseData.toString());
-		} catch (JwtException je){
+		} catch (JwtException je) {
 			responseData = new ResponseData<>(StatusCode.BAD_REQUEST, ResponseMessage.INVALID_TOKEN,
 				null);
 		} catch (NotFoundUserException e) {
@@ -108,12 +112,13 @@ public class VoteController {
 				null);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
-			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.FAILED_TO_SAVE_VOTE, null);
+			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
+				ResponseMessage.FAILED_TO_SAVE_VOTE, null);
 			log.error(e.getMessage());
 		}
 
-        return responseData;
-    }
+		return responseData;
+	}
 
 	/**
 	 * 투표 정보 수정
@@ -121,16 +126,16 @@ public class VoteController {
 	@ApiOperation(value = "투표 정보 수정", notes = "vote를 id로 조회 후 수정합니다.")
 	@PutMapping("/{id}")
 	public ResponseData<UpdateVoteResponse> updateVote(@PathVariable("id") Long id,
-													   @RequestBody @Valid UpdateVoteRequest request) {
+		@RequestBody @Valid UpdateVoteRequest request) {
 		ResponseData<UpdateVoteResponse> responseData = null;
 		UpdateVoteResponse updateVoteResponse = null;
 		try {
 			voteService.update(id, request.getTitle());
 			Vote vote = voteService.findById(id);
 
-            updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle());
-            responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
-                updateVoteResponse);
+			updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle());
+			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
+				updateVoteResponse);
 
 		} catch (NoSuchElementException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,
@@ -169,21 +174,21 @@ public class VoteController {
 		Long userId = null;
 		String authenticationHeader = request.getHeader("Authorization");
 
-        // 1. 헤더에서 토큰값이 있는지 체크 & userId 가져오기
-        if (authenticationHeader != null && authenticationHeader.startsWith("Bearer")) {
-            String token = authenticationHeader.replace("Bearer", "");
-            userId = jwtUtil.getUserIdByToken(token);
-        }
+		// 1. 헤더에서 토큰값이 있는지 체크 & userId 가져오기
+		if (authenticationHeader != null && authenticationHeader.startsWith("Bearer")) {
+			String token = authenticationHeader.replace("Bearer", "");
+			userId = jwtUtil.getUserIdByToken(token);
+		}
 
-        // 1-2. 없을경우 에러 처리
-        if (userId == null) {
-            responseData = new ResponseData<>(StatusCode.UNAUTHORIZED,
-                ResponseMessage.NOT_FOUND_USER, null);
-            return responseData;
-        }
+		// 1-2. 없을경우 에러 처리
+		if (userId == null) {
+			responseData = new ResponseData<>(StatusCode.UNAUTHORIZED,
+				ResponseMessage.NOT_FOUND_USER, null);
+			return responseData;
+		}
 
-        // 2. 투표 참여 정보 객체 저장
-        VoteParticipant voteParticipant = new VoteParticipant(userId, voteId, voteItemId);
+		// 2. 투표 참여 정보 객체 저장
+		VoteParticipant voteParticipant = new VoteParticipant(userId, voteId, voteItemId);
 
 		// 3. 투표 참여 정보 테이블에 저장
 		try {
@@ -193,7 +198,8 @@ public class VoteController {
 				new VoteParticipateResponse(voteParticipantId));
 		} catch (Exception e) {
 			// 3-2. DB 에러시 처리(try-catch 또는 exception 처리)
-			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.FAILED_TO_SAVE_VOTE_PARTICIPANT, null);
+			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
+				ResponseMessage.FAILED_TO_SAVE_VOTE_PARTICIPANT, null);
 			log.error(e.toString());
 		}
 		return responseData;
@@ -204,34 +210,38 @@ public class VoteController {
 	 */
 	@ApiOperation(value = "회원별 투표 정보 조회", notes = "내가 만든 투표 목록 조회")
 	@GetMapping("/myVote/{memberId}")
-	public ResponseData<VoteByUserResponse> getVoteListByMember(@PathVariable @Valid Long memberId){
-			ResponseData<VoteByUserResponse> responseData = null;
+	public ResponseData<VoteByUserResponse> getVoteListByMember(
+		@PathVariable @Valid Long memberId) {
+		ResponseData<VoteByUserResponse> responseData = null;
 
-			try {
-				User user = userService.findById(memberId);
-				List<Vote> voteList = user.getVotes();
+		try {
+			User user = userService.findById(memberId);
+			List<Vote> voteList = user.getVotes();
 
-				List<VoteWithItemResponse> voteWithItemResponseList = new ArrayList<>();
+			List<VoteWithItemResponse> voteWithItemResponseList = new ArrayList<>();
 
-				for (Vote vote : voteList) {
-					List<VoteItem> voteItems = vote.getVoteItems();
-					List<VoteItemResponse> voteItemResponseList = voteItems.stream()
-							.map(vi -> new VoteItemResponse(vi))
-							.collect(toList());
+			for (Vote vote : voteList) {
+				List<VoteItem> voteItems = vote.getVoteItems();
+				List<VoteItemResponse> voteItemResponseList = voteItems.stream()
+					.map(vi -> new VoteItemResponse(vi))
+					.collect(toList());
 
-					VoteWithItemResponse voteWithItemResponse = new VoteWithItemResponse(vote.getId(), vote.getTitle(), voteItemResponseList);
+				VoteWithItemResponse voteWithItemResponse = new VoteWithItemResponse(vote.getId(),
+					vote.getTitle(), voteItemResponseList);
 
-					voteWithItemResponseList.add(voteWithItemResponse);
-				}
-
-				responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, new VoteByUserResponse(user.getId(), voteWithItemResponseList));
-				log.info(responseData.toString());
-			} catch (NotFoundUserException e){
-				log.error(e.getMessage());
-				responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER, null);
-			} catch (Exception e) {
-				log.error(e.getMessage());
+				voteWithItemResponseList.add(voteWithItemResponse);
 			}
-			return responseData;
+
+			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
+				new VoteByUserResponse(user.getId(), voteWithItemResponseList));
+			log.info(responseData.toString());
+		} catch (NotFoundUserException e) {
+			log.error(e.getMessage());
+			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
+				null);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return responseData;
 	}
 }
