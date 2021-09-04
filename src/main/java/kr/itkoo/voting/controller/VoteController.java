@@ -2,8 +2,6 @@ package kr.itkoo.voting.controller;
 
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -53,9 +51,7 @@ public class VoteController {
 	 */
 	@ApiOperation(value = "투표 정보 조회", notes = "id값으로 vote 정보를 조회합니다.")
 	@GetMapping("/{id}")
-	public ResponseData<VoteResponse> getVoteById(
-		@ApiParam(name = "투표 id", required = true, example = "1") @PathVariable("id") Long id) {
-		log.info("getVoteById : " + id);
+	public ResponseData<VoteResponse> getVoteById(@PathVariable("id") Long id) {
 		ResponseData<VoteResponse> responseData = null;
 
 		VoteResponse voteResponse = null;

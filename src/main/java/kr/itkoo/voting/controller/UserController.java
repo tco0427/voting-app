@@ -1,7 +1,6 @@
 package kr.itkoo.voting.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
@@ -23,7 +22,7 @@ public class UserController {
 
     @ApiOperation(value = "", notes = "id값으로 회원 정보 조회")
     @GetMapping("/{id}")
-    public ResponseData<UserResponse> getUserById(@ApiParam("회원 id") @PathVariable("id") Long id) {
+    public ResponseData<UserResponse> getUserById(@PathVariable("id") Long id) {
         log.info("getUserById : " + id);
 
         ResponseData<UserResponse> responseData = null;
