@@ -85,14 +85,14 @@ public class VoteController {
 
         try {
 			String token = jwtUtil.getTokenByHeader(httpServletRequest);
+
 			jwtUtil.isValidToken(token);
+
 			Long userId = jwtUtil.getUserIdByToken(token);
 
-            Vote vote = new Vote();
             User user = userService.findById(userId);
 
-            vote.setUser(user);
-            vote.setTitle(request.getTitle());
+			Vote vote = new Vote(user, request.getTitle());
 
             Long id = voteService.join(vote);
 
@@ -105,7 +105,7 @@ public class VoteController {
 				null);
 		} catch (NotFoundUserException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
-				null);
+					null);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
 			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.FAILED_TO_SAVE_VOTE, null);

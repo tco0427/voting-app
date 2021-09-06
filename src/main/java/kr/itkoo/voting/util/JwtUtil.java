@@ -118,7 +118,7 @@ public class JwtUtil implements Serializable {
      * @param token String
      * @return Boolean
      */
-    public Boolean isValidToken(String token){
+    public void isValidToken(String token){
         // 1. 토큰 만료일을 체크한다
         if(isTokenExpired(token)){
             throw new JwtException(ResponseMessage.EXPIRED_TOKEN);
@@ -131,9 +131,7 @@ public class JwtUtil implements Serializable {
         }
 
         // 4. userId로 DB 조회시 나오는 값이 없을 경우
-        User user = userService.findById(userId);
-
-        return true;
+        userService.findById(userId);
     }
 
     /**
