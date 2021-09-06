@@ -14,7 +14,7 @@ import static lombok.AccessLevel.*;
 
 @Entity
 @Getter
-@ToString
+@ToString(of = {"id", "title", "content"})
 @NoArgsConstructor(access = PROTECTED)
 public class FAQ extends BaseEntity{
     @Id

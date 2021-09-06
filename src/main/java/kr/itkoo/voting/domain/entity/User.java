@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
-@ToString
+@ToString(of = {"id", "platformCode", "platformId", "name", "imageUrl"})
 @NoArgsConstructor(access = PROTECTED)
 public class User extends BaseEntity{
 

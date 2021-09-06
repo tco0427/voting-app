@@ -23,7 +23,6 @@ public class VoteParticipant {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-
     private Long userId;
 
     private Long voteId;
