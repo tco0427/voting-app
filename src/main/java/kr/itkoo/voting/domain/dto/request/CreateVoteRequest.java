@@ -4,6 +4,5 @@ import lombok.Data;
 
 @Data
 public class CreateVoteRequest {
-    private Long userId;
     private String title;
 }

@@ -3,9 +3,11 @@ spring:
     url: jdbc:mysql://121.124.124.8/dgrowth?characterEncoding=UTF-8
     username: dgrowth
     password: elrmfhtm@!
+    driver-class-name: com.mysql.jdbc.Driver
+
   jpa:
-#    hibernate:
-#      ddl-auto: update
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true

@@ -1,9 +1,8 @@
 package kr.itkoo.voting.controller;
 
 
+import io.jsonwebtoken.JwtException;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -53,9 +52,7 @@ public class VoteController {
 	 */
 	@ApiOperation(value = "투표 정보 조회", notes = "id값으로 vote 정보를 조회합니다.")
 	@GetMapping("/{id}")
-	public ResponseData<VoteResponse> getVoteById(
-		@ApiParam(name = "투표 id", required = true, example = "1") @PathVariable("id") Long id) {
-		log.info("getVoteById : " + id);
+	public ResponseData<VoteResponse> getVoteById(@PathVariable("id") Long id) {
 		ResponseData<VoteResponse> responseData = null;
 
 		VoteResponse voteResponse = null;
@@ -81,16 +78,21 @@ public class VoteController {
 	@ApiOperation(value = "투표 생성", notes = "새로운 vote를 생성 합니다.")
 	@PostMapping("/new")
 	public ResponseData<CreateVoteResponse> saveVote(
-		@RequestBody @Valid CreateVoteRequest request) {
+		@RequestBody @Valid CreateVoteRequest request, HttpServletRequest httpServletRequest) {
 
-        ResponseData<CreateVoteResponse> responseData = null;
-        CreateVoteResponse createVoteResponse;
+		ResponseData<CreateVoteResponse> responseData = null;
+		CreateVoteResponse createVoteResponse;
+
         try {
-            Vote vote = new Vote();
-            User user = userService.findById(request.getUserId());
+			String token = jwtUtil.getTokenByHeader(httpServletRequest);
 
-            vote.setUser(user);
-            vote.setTitle(request.getTitle());
+			jwtUtil.isValidToken(token);
+
+			Long userId = jwtUtil.getUserIdByToken(token);
+
+            User user = userService.findById(userId);
+
+			Vote vote = new Vote(user, request.getTitle());
 
             Long id = voteService.join(vote);
 
@@ -98,11 +100,15 @@ public class VoteController {
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
 				createVoteResponse);
 			log.info(responseData.toString());
+		} catch (JwtException je){
+			responseData = new ResponseData<>(StatusCode.BAD_REQUEST, ResponseMessage.INVALID_TOKEN,
+				null);
 		} catch (NotFoundUserException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
-				null);
+					null);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
+			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.FAILED_TO_SAVE_VOTE, null);
 			log.error(e.getMessage());
 		}
 
