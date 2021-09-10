@@ -92,13 +92,16 @@ public class VoteController {
 
 		try {
 			String token = jwtUtil.getTokenByHeader(httpServletRequest);
+
 			jwtUtil.isValidToken(token);
+
 			Long userId = jwtUtil.getUserIdByToken(token);
 
-			User user = userService.findById(userId);
+      User user = userService.findById(userId);
+
 			Vote vote = new Vote(user, request.getTitle());
 
-			Long id = voteService.join(vote);
+      Long id = voteService.join(vote);
 
 			createVoteResponse = new CreateVoteResponse(id, vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
@@ -109,7 +112,7 @@ public class VoteController {
 				null);
 		} catch (NotFoundUserException e) {
 			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
-				null);
+					null);
 			log.error("Optional Error" + e.getMessage());
 		} catch (Exception e) {
 			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,

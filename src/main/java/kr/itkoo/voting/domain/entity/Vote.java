@@ -13,12 +13,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.*;
+
+import static javax.persistence.FetchType.*;
+import static javax.persistence.GenerationType.*;
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
-@Setter
 @ToString(of = {"id", "user", "title"})
 @NoArgsConstructor(access = PROTECTED)
 public class Vote extends BaseEntity {
@@ -35,8 +39,12 @@ public class Vote extends BaseEntity {
 	@OneToMany(mappedBy = "vote")
 	private List<VoteItem> voteItems = new ArrayList<>();
 
-	public Vote(User user, String title) {
-		this.user = user;
-		this.title = title;
-	}
+  public Vote(User user, String title) {
+    this.user = user;
+    this.title = title;
+  }
+
+  public void setTitle(String title){
+    this.title = title;
+  }
 }
