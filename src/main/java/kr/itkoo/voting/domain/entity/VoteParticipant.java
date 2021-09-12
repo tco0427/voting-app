@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -25,14 +22,16 @@ public class VoteParticipant {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    private Long voteId;
+
+    private Long voteItemId;
+
     @ManyToOne(fetch = LAZY)
     private User user;
 
-    @ManyToOne(fetch = LAZY)
-    private Vote vote;
-
-    public VoteParticipant(User user, Vote vote) {
+    public VoteParticipant(User user, Long voteId, Long voteItemId) {
         this.user = user;
-        this.vote = vote;
+        this.voteId = voteId;
+        this.voteItemId = voteItemId;
     }
 }

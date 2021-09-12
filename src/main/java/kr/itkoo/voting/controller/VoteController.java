@@ -191,10 +191,9 @@ public class VoteController {
 		}
 
 		User user = userService.findById(userId);
-		Vote vote = voteService.findById(voteId);
 
 		// 2. 투표 참여 정보 객체 저장
-		VoteParticipant voteParticipant = new VoteParticipant(user, vote);
+		VoteParticipant voteParticipant = new VoteParticipant(user, voteId, voteItemId);
 
 		// 3. 투표 참여 정보 테이블에 저장
 		try {
