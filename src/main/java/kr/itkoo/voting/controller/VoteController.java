@@ -65,7 +65,7 @@ public class VoteController {
 		VoteResponse voteResponse = null;
 		try {
 			Vote vote = voteService.findById(id);
-			voteResponse = new VoteResponse(vote.getTitle());
+			voteResponse = new VoteResponse(vote.getId(), vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteResponse);
 			log.info(responseData.toString());
 		} catch (NoSuchElementException e) {
@@ -97,11 +97,11 @@ public class VoteController {
 
 			Long userId = jwtUtil.getUserIdByToken(token);
 
-      User user = userService.findById(userId);
+      		User user = userService.findById(userId);
 
 			Vote vote = new Vote(user, request.getTitle());
 
-      Long id = voteService.join(vote);
+			Long id = voteService.join(vote);
 
 			createVoteResponse = new CreateVoteResponse(id, vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
@@ -165,45 +165,6 @@ public class VoteController {
 			responseData = new ResponseData<>(StatusCode.BAD_REQUEST,
 				ResponseMessage.NOT_FOUND_VOTE, null);
 			log.error(e.getMessage());
-		}
-		return responseData;
-	}
-
-	@PostMapping("/{voteId}/item/{voteItemId}")
-	public ResponseData<VoteParticipateResponse> participateVote(
-		@PathVariable("voteId") Long voteId, @PathVariable("voteItemId") Long voteItemId,
-		HttpServletRequest request) {
-		ResponseData<VoteParticipateResponse> responseData;
-		Long userId = null;
-		String authenticationHeader = request.getHeader("Authorization");
-
-		// 1. 헤더에서 토큰값이 있는지 체크 & userId 가져오기
-		if (authenticationHeader != null && authenticationHeader.startsWith("Bearer")) {
-			String token = authenticationHeader.replace("Bearer", "");
-			userId = jwtUtil.getUserIdByToken(token);
-		}
-
-		// 1-2. 없을경우 에러 처리
-		if (userId == null) {
-			responseData = new ResponseData<>(StatusCode.UNAUTHORIZED,
-				ResponseMessage.NOT_FOUND_USER, null);
-			return responseData;
-		}
-
-		// 2. 투표 참여 정보 객체 저장
-		VoteParticipant voteParticipant = new VoteParticipant(userId, voteId, voteItemId);
-
-		// 3. 투표 참여 정보 테이블에 저장
-		try {
-			Long voteParticipantId = voteParticipantService.save(voteParticipant);
-			// 3-1. 응답 객체 생성 후 리턴
-			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
-				new VoteParticipateResponse(voteParticipantId));
-		} catch (Exception e) {
-			// 3-2. DB 에러시 처리(try-catch 또는 exception 처리)
-			responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR,
-				ResponseMessage.FAILED_TO_SAVE_VOTE_PARTICIPANT, null);
-			log.error(e.toString());
 		}
 		return responseData;
 	}

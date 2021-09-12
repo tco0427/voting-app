@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -17,20 +16,21 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @ToString
 @NoArgsConstructor(access = PROTECTED)
-public class VoteParticipant {
+public class VoteParticipant extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private Long userId;
-
     private Long voteId;
 
     private Long voteItemId;
 
-    public VoteParticipant(Long userId, Long voteId, Long voteItemId) {
-        this.userId = userId;
+    @ManyToOne(fetch = LAZY)
+    private User user;
+
+    public VoteParticipant(User user, Long voteId, Long voteItemId) {
+        this.user = user;
         this.voteId = voteId;
         this.voteItemId = voteItemId;
     }

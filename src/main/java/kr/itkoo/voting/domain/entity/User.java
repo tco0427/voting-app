@@ -35,6 +35,9 @@ public class User extends BaseEntity{
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<VoteParticipant> voteParticipants = new ArrayList<>();
+
     public User(PlatformCode platformCode, int platformId, String name, String imageUrl) {
         this.platformCode = platformCode;
         this.platformId = platformId;
