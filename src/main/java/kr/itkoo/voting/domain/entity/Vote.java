@@ -39,9 +39,6 @@ public class Vote extends BaseEntity {
 	@OneToMany(mappedBy = "vote")
 	private List<VoteItem> voteItems = new ArrayList<>();
 
-	@OneToMany(mappedBy = "vote")
-	private List<VoteParticipant> voteParticipants = new ArrayList<>();
-
   	public Vote(User user, String title) {
     	this.user = user;
     	this.title = title;

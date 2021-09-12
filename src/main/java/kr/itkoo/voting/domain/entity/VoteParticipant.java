@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @ToString
 @NoArgsConstructor(access = PROTECTED)
-public class VoteParticipant {
+public class VoteParticipant extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

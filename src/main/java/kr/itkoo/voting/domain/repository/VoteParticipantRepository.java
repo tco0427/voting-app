@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VoteParticipantRepository extends JpaRepository<VoteParticipant, Long> {
-    Slice<VoteParticipant> findByUserId(Long id, Pageable pageable);
+    Slice<VoteParticipant> findByUserId(Long userId, Pageable pageable);
 }
