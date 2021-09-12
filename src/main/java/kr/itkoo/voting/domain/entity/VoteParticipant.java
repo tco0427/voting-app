@@ -8,7 +8,9 @@ import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -23,15 +25,14 @@ public class VoteParticipant {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne(fetch = LAZY)
+    private User user;
 
-    private Long voteId;
+    @ManyToOne(fetch = LAZY)
+    private Vote vote;
 
-    private Long voteItemId;
-
-    public VoteParticipant(Long userId, Long voteId, Long voteItemId) {
-        this.userId = userId;
-        this.voteId = voteId;
-        this.voteItemId = voteItemId;
+    public VoteParticipant(User user, Vote vote) {
+        this.user = user;
+        this.vote = vote;
     }
 }
