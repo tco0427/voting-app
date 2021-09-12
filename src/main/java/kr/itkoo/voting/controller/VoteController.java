@@ -65,7 +65,7 @@ public class VoteController {
 		VoteResponse voteResponse = null;
 		try {
 			Vote vote = voteService.findById(id);
-			voteResponse = new VoteResponse(vote.getTitle());
+			voteResponse = new VoteResponse(vote.getId(), vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteResponse);
 			log.info(responseData.toString());
 		} catch (NoSuchElementException e) {
@@ -97,11 +97,11 @@ public class VoteController {
 
 			Long userId = jwtUtil.getUserIdByToken(token);
 
-      User user = userService.findById(userId);
+      		User user = userService.findById(userId);
 
 			Vote vote = new Vote(user, request.getTitle());
 
-      Long id = voteService.join(vote);
+			Long id = voteService.join(vote);
 
 			createVoteResponse = new CreateVoteResponse(id, vote.getTitle());
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
