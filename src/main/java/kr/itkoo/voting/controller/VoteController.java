@@ -92,9 +92,7 @@ public class VoteController {
 
 		try {
 			String token = jwtUtil.getTokenByHeader(httpServletRequest);
-
 			jwtUtil.isValidToken(token);
-
 			Long userId = jwtUtil.getUserIdByToken(token);
 
       		User user = userService.findById(userId);
@@ -130,21 +128,17 @@ public class VoteController {
 	@PutMapping("/{id}")
 	public ResponseData<UpdateVoteResponse> updateVote(@PathVariable("id") Long id,
 		@RequestBody @Valid UpdateVoteRequest request) {
-		ResponseData<UpdateVoteResponse> responseData = null;
+		ResponseData<UpdateVoteResponse> responseData;
 		UpdateVoteResponse updateVoteResponse = null;
 		try {
-			voteService.update(id, request.getTitle());
-			Vote vote = voteService.findById(id);
+			String title = request.getTitle();
+			voteService.update(id, title);
 
-			updateVoteResponse = new UpdateVoteResponse(vote.getId(), vote.getTitle());
-			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
-				updateVoteResponse);
+			updateVoteResponse = new UpdateVoteResponse(id, title);
+			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, updateVoteResponse);
 
 		} catch (NoSuchElementException e) {
-			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE,
-				null);
-			log.error("Optional Error" + e.getMessage());
-		} catch (Exception e) {
+			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE, null);
 			log.error(e.getMessage());
 		}
 		return responseData;
@@ -156,11 +150,11 @@ public class VoteController {
 	@ApiOperation(value = "투표 삭제", notes = "vote를 id값을 통해 삭제합니다.")
 	@DeleteMapping("/{id}")
 	public ResponseData<DeleteVoteResponse> deleteVote(@PathVariable("id") Long id) {
-		ResponseData<DeleteVoteResponse> responseData = null;
+		ResponseData<DeleteVoteResponse> responseData;
 		try {
 			voteService.deleteById(id);
-			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
-				new DeleteVoteResponse(id));
+			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, new DeleteVoteResponse(id));
+
 		} catch (Exception e) {
 			responseData = new ResponseData<>(StatusCode.BAD_REQUEST,
 				ResponseMessage.NOT_FOUND_VOTE, null);
@@ -173,13 +167,17 @@ public class VoteController {
 	 * 내가 만든 투표 목록 조회
 	 */
 	@ApiOperation(value = "회원별 투표 정보 조회", notes = "내가 만든 투표 목록 조회")
-	@GetMapping("/myVote/{memberId}")
-	public ResponseData<VoteByUserResponse> getVoteListByMember(
-		@PathVariable @Valid Long memberId) {
-		ResponseData<VoteByUserResponse> responseData = null;
+	@GetMapping("/myVote")
+	public ResponseData<VoteByUserResponse> getVoteListByMember(HttpServletRequest httpServletRequest) {
+		ResponseData<VoteByUserResponse> responseData;
 
 		try {
-			User user = userService.findById(memberId);
+			String token = jwtUtil.getTokenByHeader(httpServletRequest);
+			jwtUtil.isValidToken(token);
+			Long userId = jwtUtil.getUserIdByToken(token);
+
+			User user = userService.findById(userId);
+
 			List<Vote> voteList = user.getVotes();
 
 			List<VoteWithItemResponse> voteWithItemResponseList = new ArrayList<>();
@@ -198,13 +196,10 @@ public class VoteController {
 
 			responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS,
 				new VoteByUserResponse(user.getId(), voteWithItemResponseList));
-			log.info(responseData.toString());
+
 		} catch (NotFoundUserException e) {
 			log.error(e.getMessage());
-			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER,
-				null);
-		} catch (Exception e) {
-			log.error(e.getMessage());
+			responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER, null);
 		}
 		return responseData;
 	}

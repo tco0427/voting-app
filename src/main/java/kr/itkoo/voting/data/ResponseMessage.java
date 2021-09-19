@@ -11,4 +11,5 @@ public class ResponseMessage {
 	public static final String INVALID_TOKEN = "유효하지 않은 토큰 정보";
 	public static final String INVALID_HEADER = "잘못된 헤더 정보";
 	public static final String FAILED_TO_LOAD_FAQ = "FAQ 조회 실패";
+	public static final String FAILED_TO_SAVE_VOTEITEM = "투표 아이템 생성 실패";
 }
