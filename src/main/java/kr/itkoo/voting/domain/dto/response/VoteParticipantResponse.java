@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class VoteParticipateResponse {
-    Long id;
+public class VoteParticipantResponse {
+    private Long id;
+    private Long voteId;
 }
