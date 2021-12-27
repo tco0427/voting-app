@@ -5,12 +5,12 @@ import java.util.NoSuchElementException;
 import kr.itkoo.voting.data.ResponseData;
 import kr.itkoo.voting.data.ResponseMessage;
 import kr.itkoo.voting.data.StatusCode;
+import kr.itkoo.voting.domain.dto.request.CreateVoteItemRequest;
 import kr.itkoo.voting.domain.dto.response.CreateVoteItemResponse;
 import kr.itkoo.voting.domain.dto.response.VoteItemResponse;
 import kr.itkoo.voting.domain.dto.response.VoteWithItemResponse;
 import kr.itkoo.voting.domain.entity.Vote;
 import kr.itkoo.voting.domain.entity.VoteItem;
-import kr.itkoo.voting.exception.NotFoundUserException;
 import kr.itkoo.voting.service.VoteItemService;
 import kr.itkoo.voting.service.VoteService;
 import lombok.RequiredArgsConstructor;
@@ -28,34 +28,34 @@ public class VoteItemController {
     private final VoteService voteService;
     private final VoteItemService voteItemService;
 
-    @PostMapping("/{voteId}")
-    public ResponseData<CreateVoteItemResponse> saveVoteItem(@PathVariable("voteId") Long voteId,
-        @RequestParam("name") String name) {
-        ResponseData<CreateVoteItemResponse> responseData = null;
+    @PostMapping("/new")
+    public ResponseData<CreateVoteItemResponse> saveVoteItem(@RequestBody CreateVoteItemRequest request) {
+        ResponseData<CreateVoteItemResponse> responseData;
 
         try {
-            // 1. 투표 아이디 유효성 체크
-            // 1-2. 없을겨우 에러 처리
+            Long voteId = request.getVoteId();
+            String name = request.getName();
+
             Vote vote = voteService.findById(voteId);
 
-            // 2. 투표 아이템 저장
             VoteItem voteItem = new VoteItem(vote, name);
             Long voteItemId = voteItemService.save(voteItem);
             CreateVoteItemResponse voteItemResponse = new CreateVoteItemResponse(voteItemId, name);
 
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, voteItemResponse);
-        } catch(NoSuchElementException e){
+        } catch(NoSuchElementException e) {
+            log.error(e.getMessage());
             responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE, null);
-        } catch(NotFoundUserException e) {
-            responseData = new ResponseData<>(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.NOT_FOUND_USER, null);
-            return responseData;
+        } catch(IllegalStateException e) {
+            log.error(e.getMessage());
+            responseData = new ResponseData<>(StatusCode.BAD_REQUEST, ResponseMessage.FAILED_TO_SAVE_VOTEITEM, null);
         }
         return responseData;
     }
 
     @GetMapping("/{voteId}")
     public ResponseData<VoteWithItemResponse> getVoteItemList(@PathVariable("voteId") Long voteId){
-        ResponseData<VoteWithItemResponse> responseData = null;
+        ResponseData<VoteWithItemResponse> responseData;
 
         try{
             Vote vote = voteService.findById(voteId);
@@ -65,8 +65,9 @@ public class VoteItemController {
                     .collect(toList());
 
             responseData = new ResponseData<>(StatusCode.OK, ResponseMessage.SUCCESS, new VoteWithItemResponse(voteId, vote.getTitle(), result));
-        }catch(Exception e){
+        } catch(NoSuchElementException e){
             log.error(e.getMessage());
+            responseData = new ResponseData<>(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_VOTE, null);
         }
         return responseData;
     }

@@ -34,8 +34,10 @@ public class VoteService {
 
     @Transactional
     public void update(Long id, String title) {
-        Vote vote = voteRepository.findById(id).get();
-        vote.setTitle(title);
+        Vote vote = findById(id);
+        if(title != null){
+            vote.setTitle(title);
+        }
     }
 
     public void deleteById(Long id) {

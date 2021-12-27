@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class VoteByUserResponse {
-
     private Long userId;
     private List<VoteWithItemResponse> voteResponses;
 }

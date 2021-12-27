@@ -9,7 +9,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
-@Setter
 @Getter
 @AllArgsConstructor
 @ToString(of = {"id", "name"})
@@ -27,6 +26,10 @@ public class VoteItem extends BaseEntity{
 
     public VoteItem(Vote vote, String name){
         this.vote = vote;
+        this.name = name;
+    }
+
+    public void setName(String name){
         this.name = name;
     }
 }

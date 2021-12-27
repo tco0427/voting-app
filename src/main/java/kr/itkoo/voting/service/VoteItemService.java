@@ -25,16 +25,11 @@ public class VoteItemService {
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public List<VoteItem> findAll() {
-        return voteItemRepository.findAll();
-    }
+    public List<VoteItem> findAllByVoteId(Long voteId) {
+        Vote vote = voteRepository.findById(voteId)
+                .orElseThrow(NoSuchElementException::new);
 
-    public List<VoteItem> findAllByVoteId(Long voteId) throws Exception {
-        Optional<Vote> voteOptional = voteRepository.findById(voteId);
-        if(voteOptional.isEmpty()){
-            throw new Exception();
-        }
-        return voteItemRepository.findByVote(voteOptional.get());
+        return voteItemRepository.findByVote(vote);
     }
 
     @Transactional
@@ -53,8 +48,10 @@ public class VoteItemService {
 
     @Transactional
     public void update(Long id, String name) {
-        VoteItem voteItem = voteItemRepository.findById(id).get();
-        voteItem.setName(name);
+        VoteItem voteItem = findById(id);
+        if(name != null) {
+            voteItem.setName(name);
+        }
     }
 
     public void deleteById(Long id) {
